@@ -74,6 +74,10 @@ final class AutoLoad
 
     public static function register()
     {
+        if (true === self::isRegistered()) {
+            return;
+        }
+
         if (false === function_exists('spl_autoload_register')) {
             throw new RaischException(__CLASS__ . ' needs the spl_autoload_register function to work.');
         }

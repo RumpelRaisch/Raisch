@@ -52,5 +52,5 @@ if (true === version_compare(PHP_VERSION, '5.3.0', '<')) {
 
     include_once __DIR__ . DIRECTORY_SEPARATOR . 'AutoLoad.php';
 
-    AutoLoad::isRegistered() ?: AutoLoad::register();
+    AutoLoad::register();
 }
