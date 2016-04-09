@@ -2,7 +2,7 @@
 /* [namespace]
 ============================================================================= */
 
-namespace Raisch\Libs\Logger;
+namespace Raisch\Libs\Model;
 
 /* [use: namespace classes]
 ============================================================================= */
@@ -12,8 +12,8 @@ namespace Raisch\Libs\Logger;
 /* [use: namespace interfaces]
 ============================================================================= */
 
-use Raisch\Libs\Interfaces\ILoggerContainer;
-use Raisch\Libs\Interfaces\ILogger;
+use Raisch\Libs\Interfaces\IModel;
+use Raisch\Libs\Interfaces\IModelMapper;
 
 /* [use: global classes]
 ============================================================================= */
@@ -26,22 +26,22 @@ use Raisch\Libs\Interfaces\ILogger;
 // use \GlobalInterface;
 
 /**
- * In this file the LoggerContainer class is defined.
+ * In this file the Model class is defined.
  */
 
 /**
- * Container class for logger objects.
+ * Short class description ...
  *
  * @author     Rainer Schulz <rainer@bitshifting.de>
  * @link       http://bitshifting.de
- * @copyright  2013 - Rainer Schulz
+ * @copyright  2016 - Rainer Schulz
  * @license    CC BY-NC-SA 3.0
  *             - http://creativecommons.org/licenses/by-nc-sa/3.0/
  * @package    Raisch
  * @subpackage Libs
- * @version    1.0.0 02/09/2013 13:17
+ * @version    1.0.0 09/04/2016 17:43
  */
-class LoggerContainer implements ILoggerContainer
+class Model implements IModel
 {
     /* [class constants]
     ========================================================================= */
@@ -51,17 +51,29 @@ class LoggerContainer implements ILoggerContainer
     /* [class properties]
     ========================================================================= */
 
-    // none yet
+    protected $oModelMapper = null;
 
     /* [object properties]
     ========================================================================= */
 
-    private $aILogger = array();
+    // none yet
 
     /* [Constructor and Destructor]
     ========================================================================= */
 
-    // none yet
+    /**
+     * The Constructor.
+     *
+     * @access public
+     * @return object Model
+     *                returns a new object of this class
+     */
+    public function __construct(array $aData = null)
+    {
+        if (null !== $aData) {
+            $this->setData($aData);
+        }
+    }
 
     /* [magical methods]
     ========================================================================= */
@@ -76,21 +88,29 @@ class LoggerContainer implements ILoggerContainer
     /* [object methods]
     ========================================================================= */
 
-    public function isInjectedILogger()
+    public function setData(array $aData) // must be assoc
     {
-        return false === empty($this->aILogger);
-    }
+        $aKeys = explode(
+            ' ',
+            implode(
+                '',
+                array_map(
+                    'ucfirst',
+                    explode(
+                        '_',
+                        implode(
+                            ' _',
+                            array_keys($aData)
+                        )
+                    )
+                )
+            )
+        );
 
-    public function log($sToLog, $bAppend = null)
-    {
-        if (false === $this->isInjectedILogger()) {
-            return null;
-        }
+        $aData = array_combine($aKeys, $aData);
 
-        for ($i = 0, $c = count($this->aILogger); $i < $c; ++$i) {
-            if (true === $this->aILogger[$i]->issetLogFile()) {
-                $this->aILogger[$i]->log($sToLog, $bAppend);
-            }
+        foreach ($aData as $sKey => $mValue) {
+            $this->{'set' . $sKey}($mValue);
         }
 
         return $this;
@@ -99,31 +119,18 @@ class LoggerContainer implements ILoggerContainer
     /* [Getter and Setter]
     ========================================================================= */
 
-    public function getILoggers()
+    public function getModelMapper()
     {
-        return $this->aILogger;
+        return $this->oModelMapper;
     }
 
     /* [Dependency Injection - (Setter Injection)]
     ========================================================================= */
 
-    public function injectAddILogger(ILogger $oILogger)
+    final public function injectModelMapper(IModelMapper $oModelMapper)
     {
-        if (false === $this->hasILogger($oILogger)) {
-            $this->aILogger[] = $oILogger;
-        }
+        $this->oModelMapper = $oModelMapper;
 
         return $this;
-    }
-
-    public function hasILogger(ILogger $oILogger)
-    {
-        foreach ($this->aILogger as $oILoggerInserted) {
-            if ($oILoggerInserted === $oILogger) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

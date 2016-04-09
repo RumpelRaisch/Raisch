@@ -62,4 +62,6 @@ interface ILoggerContainer
     public function log($sToLog);
 
     public function getILoggers();
+
+    public function hasILogger(ILogger $oILogger);
 }
